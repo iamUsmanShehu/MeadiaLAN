@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediaLAN Installation Status</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: monospace;
+            background: #1e1e1e;
+            color: #00ff00;
+            padding: 20px;
+            line-height: 1.5;
+        }
+        .container { max-width: 1000px; margin: 0 auto; }
+        h1 { color: #00ff00; margin-bottom: 20px; }
+        .status-box {
+            background: #2d2d2d;
+            border: 1px solid #00ff00;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+        }
+        .log {
+            background: #1a1a1a;
+            border: 1px solid #444;
+            padding: 15px;
+            max-height: 600px;
+            overflow-y: auto;
+            font-size: 0.9em;
+            margin-bottom: 20px;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #333;
+            border: 1px solid #00ff00;
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background: #00ff00;
+            transition: width 0.5s;
+        }
+        .stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 10px 0; }
+        .stat { background: #2d2d2d; padding: 10px; border-radius: 3px; }
+        .stat-label { color: #888; font-size: 0.9em; }
+        .stat-value { color: #00ff00; font-size: 1.2em; font-weight: bold; }
+        button {
+            background: #00ff00;
+            color: #1e1e1e;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        button:hover { background: #00dd00; }
+        .warning { color: #ffaa00; }
+        .error { color: #ff4444; }
+        .success { color: #44ff44; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 MediaLAN Installation Status</h1>
+        
+        <div class="status-box">
+            <h2>Quick Status</h2>
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-label">System</div>
+                    <div class="stat-value" id="system-status">Checking...</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Composer</div>
+                    <div class="stat-value" id="composer-status">Running...</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Vendor Size</div>
+                    <div class="stat-value" id="vendor-size">Calculating...</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Framework</div>
+                    <div class="stat-value" id="framework-status">Installing...</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="status-box">
+            <h2>Installation Progress</h2>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress" style="width: 15%;"></div>
+            </div>
+            <p id="progress-text">Installing Laravel dependencies...</p>
+            <p style="font-size: 0.8em; color: #888; margin-top: 10px;">Estimated time: 2-5 minutes depending on connection speed</p>
+        </div>
+
+        <div class="status-box">
+            <h2>Next Steps</h2>
+            <ol style="padding-left: 20px;">
+                <li>Wait for Composer to finish (this page auto-refreshes)</li>
+                <li>Run: <span style="color: #ffff00;">php artisan migrate</span> (create database tables)</li>
+                <li>Run: <span style="color: #ffff00;">php artisan db:seed</span> (populate data)</li>
+                <li>Access from phone: <span style="color: #ffff00;">http://[YOUR_IP]:8000</span></li>
+            </ol>
+            <p style="margin-top: 10px; color: #888;">Admin login: <span style="color: #ffff00;">admin / admin123</span></p>
+        </div>
+
+        <div class="status-box">
+            <h2>Manual Commands</h2>
+            <p style="margin-bottom: 10px;">Run these in CMD or PowerShell when composer finishes:</p>
+            <pre style="background: #1a1a1a; padding: 10px; border-radius: 3px; overflow-x: auto;">
+cd c:\xampp\htdocs\MediaLAN
+php artisan migrate
+php artisan db:seed
+php artisan serve --host=0.0.0.0 --port=8000
+            </pre>
+        </div>
+
+        <div class="status-box">
+            <button onclick="location.reload()">🔄 Refresh Now</button>
+            <button onclick="toggleLog()">📋 Toggle Log</button>
+            <button onclick="openMinimal()">🏠 Go to Home</button>
+        </div>
+
+        <div class="status-box">
+            <h2>Installation Log</h2>
+            <div class="log" id="log" style="display: none;">
+                <p class="warning">Loading log...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let autoRefreshInterval = 5000; // 5 seconds
+        let isAutoRefresh = true;
+
+        async function updateStatus() {
+            try {
+                const response = await fetch('/MediaLAN/minimal.php?action=status');
+                const data = await response.text();
+                
+                // Parse the status response
+                const lines = data.split('\n');
+                let vendorSize = 'Calculating...';
+                let frameworkExists = 'Not started';
+                
+                for (let line of lines) {
+                    if (line.includes('Size:')) {
+                        vendorSize = line.split(':')[1].trim();
+                    }
+                    if (line.includes('Laravel Framework:')) {
+                        frameworkExists = line.includes('exists') ? 'Installing...' : 'Pending';
+                    }
+                }
+                
+                document.getElementById('vendor-size').textContent = vendorSize;
+                document.getElementById('system-status').textContent = 'Online';
+            } catch (e) {
+                document.getElementById('system-status').textContent = 'Error';
+            }
+        }
+
+        function toggleLog() {
+            const log = document.getElementById('log');
+            log.style.display = log.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function openMinimal() {
+            window.location.href = '/MediaLAN/minimal.php';
+        }
+
+        // Auto-refresh page
+        if (isAutoRefresh) {
+            setTimeout(() => location.reload(), autoRefreshInterval);
+        }
+
+        updateStatus();
+    </script>
+</body>
+</html>

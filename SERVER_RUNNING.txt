@@ -1,0 +1,90 @@
+╔═══════════════════════════════════════════════════════════════════════════════╗
+║                                                                               ║
+║             🎬 MediaLAN is Running! (Fallback Mode)                           ║
+║                                                                               ║
+║             ✅ Server started on port 8000                                    ║
+║             ✅ Ready to use                                                   ║
+║             ✅ Database connected                                             ║
+║                                                                               ║
+╚═══════════════════════════════════════════════════════════════════════════════╝
+
+
+🌐 ACCESS MEDIALN
+
+  On your computer:
+     http://localhost:8000
+
+  Or:
+     http://localhost:8000/fallback.php
+
+  From your phone (same WiFi):
+     1. Open Command Prompt: cmd.exe
+     2. Type: ipconfig | find "IPv4"
+     3. Copy the IPv4 address (e.g., 192.168.1.100)
+     4. Visit on phone: http://192.168.1.100:8000
+
+
+🔑 LOGIN
+
+  Email:    admin@medialn.local
+  Password: admin123
+
+
+✨ YOU CAN NOW:
+
+  ✅ Browse media categories
+  ✅ View media structure
+  ✅ Login to admin panel
+  ✅ Access from phone on same WiFi
+  ✅ Check system status
+  ✅ View installed categories
+
+
+⏳ COMING SOON (When Composer Finishes):
+
+  Full Laravel features:
+    • File uploads
+    • Advanced API
+    • Complete admin functionality
+    • More performance
+
+
+📊 WHAT'S RUNNING
+
+  Server:   PHP Built-in (Lightweight)
+  Mode:     Fallback Interface
+  Port:     8000
+  Database: MediaLAN (MySQL)
+  Status:   ✅ Online
+
+
+🛑 TO STOP THE SERVER
+
+  Press: Ctrl + C
+  (In the PowerShell window where server is running)
+
+
+💡 PRO TIP
+
+  To migrate to full Laravel once Composer finishes:
+    1. Stop this server (Ctrl+C)
+    2. Run: php artisan serve --host=0.0.0.0 --port=8000
+    3. Full app features available
+
+
+📱 PHONE NOT CONNECTING?
+
+  Check:
+    • Both on same WiFi? YES / NO
+    • Using correct IP? (ipconfig)
+    • Port 8000 open? (Firewall)
+    • Phone WiFi enabled? YES / NO
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+STATUS: ✅ RUNNING
+SERVER: http://localhost:8000
+MODE: Lightweight Fallback (Full Laravel installing)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

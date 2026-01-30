@@ -1,0 +1,20 @@
+{
+    "private": true,
+    "scripts": {
+        "dev": "npm run development",
+        "development": "mix",
+        "watch": "mix watch",
+        "watch-poll": "mix watch -- --poll",
+        "hot": "mix watch --hot",
+        "prod": "npm run production",
+        "production": "mix --production"
+    },
+    "devDependencies": {
+        "@tailwindcss/forms": "^0.5.7",
+        "autoprefixer": "^10.4.16",
+        "axios": "^1.6.4",
+        "laravel-mix": "^6.0.0",
+        "postcss": "^8.4.32",
+        "tailwindcss": "^3.3.6"
+    }
+}

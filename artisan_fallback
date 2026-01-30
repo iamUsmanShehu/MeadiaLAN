@@ -1,0 +1,86 @@
+#!/usr/bin/env php
+<?php
+/**
+ * MediaLAN - Laravel Bootstrap Loader
+ * Handles running artisan commands without full vendor folder
+ * 
+ * This manually loads essential Laravel components while Composer installs
+ */
+
+define('LARAVEL_START', microtime(true));
+define('BASE_PATH', __DIR__);
+
+// Check if vendor is available
+$hasFullVendor = is_dir(BASE_PATH . '/vendor/laravel/framework');
+
+// Load environment
+if (file_exists(BASE_PATH . '/.env')) {
+    $dotenv = parse_ini_file(BASE_PATH . '/.env');
+    foreach ($dotenv as $key => $value) {
+        $value = trim($value, " \t\n\r\"'");
+        putenv("$key=$value");
+        $_ENV[$key] = $value;
+    }
+}
+
+if ($hasFullVendor) {
+    // Use the real Composer autoloader
+    require BASE_PATH . '/vendor/autoload.php';
+    $app = require_once BASE_PATH . '/bootstrap/app.php';
+    
+    $kernel = $app->make('Illuminate\Contracts\Console\Kernel');
+    exit($kernel->handle(new Symfony\Component\Console\Input\ArgvInput, new Symfony\Component\Console\Output\ConsoleOutput));
+} else {
+    // Bootstrap without full vendor - for database commands only
+    require_once BASE_PATH . '/vendor/autoload.php';
+    
+    // Create minimal console app
+    echo "╔════════════════════════════════════════════════════════════╗\n";
+    echo "║  MediaLAN - Minimal Artisan Bootstrap                      ║\n";
+    echo "║  (Waiting for full Composer installation)                  ║\n";
+    echo "╚════════════════════════════════════════════════════════════╝\n\n";
+    
+    // Get command
+    $command = $_SERVER['argv'][1] ?? 'help';
+    
+    echo "Command: $command\n";
+    echo "Status: Laravel framework still installing via Composer...\n\n";
+    
+    // Handle specific commands that don't need full framework
+    switch ($command) {
+        case 'check':
+        case 'status':
+            echo "Database Status:\n";
+            try {
+                $pdo = new PDO('mysql:host=127.0.0.1', 'root', '');
+                $pdo->exec('USE medialan');
+                $tables = $pdo->query("SHOW TABLES")->fetchAll(PDO::FETCH_COLUMN);
+                echo "  ✓ Database: medialan\n";
+                echo "  ✓ Tables: " . count($tables) . "\n";
+            } catch (Exception $e) {
+                echo "  ✗ Error: " . $e->getMessage() . "\n";
+            }
+            break;
+            
+        case 'seed':
+        case 'db:seed':
+            echo "Seeding database...\n";
+            require BASE_PATH . '/quick_seed.php';
+            break;
+            
+        case 'help':
+        default:
+            echo "Available Commands (Artisan Bootstrap):\n\n";
+            echo "  php artisan check          Check system status\n";
+            echo "  php artisan status         Show status\n";
+            echo "  php artisan seed           Seed database\n";
+            echo "  php artisan serve          Start server (wait for Composer)\n\n";
+            echo "Status: Composer installing Laravel framework...\n";
+            echo "Check progress:\n";
+            echo "  (Get-ChildItem vendor -Recurse | Measure-Object -Sum Length).Sum / 1MB\n\n";
+            break;
+    }
+    
+    echo "\n";
+    exit(0);
+}
